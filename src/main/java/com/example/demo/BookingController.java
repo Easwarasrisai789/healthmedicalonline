@@ -1,31 +1,74 @@
 package com.example.demo;
 
+import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bookings")
+@CrossOrigin("http://localhost:3000")
 public class BookingController {
 
     @Autowired
     private BookingRepository bookingRepository;
 
-    // Create a new booking
     @PostMapping
-    public Booking createBooking(@RequestBody Booking newBooking) {
-        System.out.println("Received booking: " + newBooking);
+    public Booking createBooking(
+            @RequestParam("appointmentDateTime") String appointmentDateTime,
+            @RequestParam("doctorSpecialty") String doctorSpecialty,
+            @RequestParam("userName") String userName,
+            @RequestParam("reason") String reason,
+            @RequestParam("status") String status,
+            @RequestParam("image") MultipartFile image) {
+
+        Booking newBooking = new Booking();
+        newBooking.setAppointmentDateTime(LocalDateTime.parse(appointmentDateTime));
+        newBooking.setDoctorSpecialty(doctorSpecialty);
+        newBooking.setUserName(userName);
+        newBooking.setReason(reason);
+        newBooking.setStatus(status);
+
+        if (image != null && !image.isEmpty()) {
+            try {
+                newBooking.setImage(image.getBytes()); // Store image as byte array
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to process the image file.");
+            }
+        }
+
         return bookingRepository.save(newBooking);
     }
 
-    // Get all bookings
+
+
+   
     @GetMapping
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+    public List<Map<String, Object>> getAllBookings() {
+        List<Booking> bookings = bookingRepository.findAll();
+        return bookings.stream()
+                .map(booking -> {
+                    Map<String, Object> bookingMap = new HashMap<>();
+                    bookingMap.put("id", booking.getId());
+                    bookingMap.put("appointmentDateTime", booking.getAppointmentDateTime());
+                    bookingMap.put("doctorSpecialty", booking.getDoctorSpecialty());
+                    bookingMap.put("userName", booking.getUserName());
+                    bookingMap.put("reason", booking.getReason());
+                    bookingMap.put("status", booking.getStatus());
+                    bookingMap.put("image", booking.getImage() != null ? Base64.getEncoder().encodeToString(booking.getImage()) : null);
+                    return bookingMap;
+                })
+                .collect(Collectors.toList());
     }
 
     // Get bookings by userName
@@ -50,6 +93,19 @@ public class BookingController {
             bookingRepository.delete(booking);
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
+    }
+    
+    
+    public class BookingResponse {
+        private Long id;
+        private LocalDateTime appointmentDateTime;
+        private String doctorSpecialty;
+        private String userName;
+        private String reason;
+        private String status;
+        private String image; // Base64 encoded image string
+
+        // Constructor, Getters, and Setters
     }
 
 }
