@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,8 @@ public class UserController {
 
     @Autowired
     private Dao userService;
+    
+  
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
@@ -29,4 +33,11 @@ public class UserController {
         // Return the full user object with name
         return ResponseEntity.ok(existingUser);
     }
+    
+    @GetMapping
+    public List<User> getUsers() {
+        return userService.getAllUsers();
+    }
+    
+    
 }

@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,5 +24,8 @@ public class DoctorService {
         boolean isPasswordMatch = doctor.getPassword().equals(password);
         System.out.println("Doctor password match: " + isPasswordMatch);
         return isPasswordMatch;
+    }
+    public List<Doctor> getAllDoctors() {
+        return doctorRepository.findAll();
     }
 }

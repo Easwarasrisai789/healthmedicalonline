@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,9 @@ public class DoctorController {
 
     @Autowired
     private DoctorService doctorService;
+    
+    @Autowired
+    private DoctorRepository doctorRepository ;
 
     // Login Endpoint
     @PostMapping("/login")
@@ -27,4 +32,10 @@ public class DoctorController {
             return ResponseEntity.status(401).body("Invalid Doctor ID or Password");
         }
     }
+    
+    @GetMapping
+    public List<Doctor> getDoctors() {
+        return doctorService.getAllDoctors();
+    }
+
 }

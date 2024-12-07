@@ -15,6 +15,9 @@ public class Booking {
     private String reason;
     private String status; // Pending, Accepted, Rejected
 
+    @Lob
+    private byte[] image; // Field to store image data
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -64,9 +67,17 @@ public class Booking {
         this.status = status;
     }
 
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
         return "Booking [id=" + id + ", appointmentDateTime=" + appointmentDateTime + ", doctorSpecialty=" + doctorSpecialty
-                + ", userName=" + userName + ", reason=" + reason + ", status=" + status + "]";
+                + ", userName=" + userName + ", reason=" + reason + ", status=" + status + ", imageSize=" + (image != null ? image.length : 0) + "]";
     }
 }
